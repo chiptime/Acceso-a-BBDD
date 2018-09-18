@@ -38,17 +38,18 @@ void read(Persona persona, FILE *pipe, const char *path){
     if(!(pipe = fopen(path,"r")))
         fprintf(stderr,"No he encontrado el archivo.\n");    
     while(fread(&persona, sizeof(Persona), 1, pipe)){
-        printf("%s,%hu,%iu\n", persona.nombre, persona.edad, persona.telefono);        
+
+        printf("Nombre: %s,\nEdad: %hu,\nTelefono: %iu\n\n", persona.nombre, persona.edad, persona.telefono);        
     }
     printf("\n\n");
     fclose(pipe);    
 }
 void take(Persona lista[], int id){
     lista[id] = takePerson();
-    printf("Los datos son: %s, %hu, %u", lista[id].nombre,lista[id].edad,lista[id].telefono);
+    printf("Los datos son: \nNombre: %s,\nEdad: %hu,\nTelefono: %u\n", lista[id].nombre,lista[id].edad,lista[id].telefono);
     printf("\n\nGuardando... en tiempo de ejecucion\n\n");
 }
-void save(Persona persona[N], FILE *pipe, const char *path){
+void save(Persona persona[], FILE *pipe, const char *path){
     if(!(pipe = fopen(path,"wb")))
        fprintf(stderr,"No he encontrado el archivo.\n");
     fwrite(persona,sizeof(Persona),N,pipe);
@@ -63,6 +64,7 @@ int selectId(int id){
     if(id>=N){
         printf("El id = %i no existe\n", id);
     }
+    printf("El id seleccionado es: %i\n", id);
     return id;
 }
 int main(int argc, char const *argv[]){
@@ -113,16 +115,17 @@ int main(int argc, char const *argv[]){
 
             case insertOne:
                 printf("    2. Has elegido insertar un alumno\n\n");
-                selectId(id);
-                if(&lista[id].nombre != NULL){
+                id = selectId(id);
                 take(lista,id);
-                }else{
-                    printf("El id de alumno ya esta en uso\n");
-                }
+                //if(&lista[id].nombre != NULL){
+                //take(lista,id);
+                //}else{
+                //    printf("El id de alumno ya esta en uso\n");
+                //}
             break;
             case edit:
                 printf("    3. Has elegido editar un alumno\n\n"); 
-                selectId(id);                
+                id = selectId(id);  
                 take(lista,id);               
             break;   
             case delAll:
@@ -131,8 +134,7 @@ int main(int argc, char const *argv[]){
                     strcpy( lista[i].nombre, nullStr);
                     lista[i].edad     = '\0';
                     lista[i].telefono = '\0';
-                }               
-                            //Se salta la pregunta de si/no
+                }                           
                 int sn; 
                 printf("¿Estas seguro que quieres borrar todos los alumnos?\n\n1(Si)/0(No)\n\n");               
                 scanf("%i", &sn);                
@@ -144,8 +146,11 @@ int main(int argc, char const *argv[]){
                 }
             break;  
             case delOne:
-                printf("    5. Has elegido editar un alumno\n\n");                
-                return EXIT_SUCCESS;
+                printf("    5. Has elegido borrar un alumno\n\n");  
+                selectId(id);
+                strcpy( lista[id].nombre, nullStr);
+                lista[id].edad     = '\0';
+                lista[id].telefono = '\0';
             break; 
             case saveF:                
                 printf("    6.Has elegido guardar en el fichero\n\n");                
@@ -159,8 +164,9 @@ int main(int argc, char const *argv[]){
             case list:
                 printf("    Estos alumnos estan guardados en el PROGRAMA\n\n");  
                 for(int i =0;i<N;i++){
-                    printf("%s, %i, %i \n", lista[i].nombre,lista[i].edad,lista[i].telefono);
+                    printf("ID: %i, %s, %i, %i \n", i, lista[i].nombre,lista[i].edad,lista[i].telefono);
                 }
+                printf("\n");                
             break;
             default:
                 printf("\n    Opción invalida, has sido expulsado\n\n");                
